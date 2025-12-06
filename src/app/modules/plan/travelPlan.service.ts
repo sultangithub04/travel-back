@@ -5,6 +5,7 @@ const createTravelPlan = async (payload: any) => {
   const result = await prisma.travelPlan.create({
     data: {
       userId: payload.userId,
+      title:payload.title,
       destination: payload.destination,
       startDate: payload.startDate,
       endDate: payload.endDate,
@@ -20,9 +21,14 @@ const createTravelPlan = async (payload: any) => {
 const getAllTravelPlans = async () => {
   const result = await prisma.travelPlan.findMany({
     include: {
-      user: true,
+      user: {
+        include: {
+          traveller: true
+        }
+      },
       reviews: true,
       matchRequests: true,
+ 
     },
   });
 
@@ -36,6 +42,7 @@ const getSingleTravelPlan = async (id: string) => {
       user: true,
       reviews: true,
       matchRequests: true,
+     
     },
   });
 
