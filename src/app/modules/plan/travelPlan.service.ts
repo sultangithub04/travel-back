@@ -39,9 +39,14 @@ const getSingleTravelPlan = async (id: string) => {
   const result = await prisma.travelPlan.findUnique({
     where: { id: Number(id) },
     include: {
-      user: true,
+      user: {
+        include:{
+          traveller:true
+        }
+      },
       reviews: true,
       matchRequests: true,
+      
      
     },
   });

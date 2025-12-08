@@ -7,11 +7,7 @@ import auth from "../../middlewares/auth";
 import { UserRole } from "@prisma/client";
 const router = express.Router()
 
-router.get(
-    '/me',
-    auth(UserRole.ADMIN, UserRole.TRAVELLER),
-    UserController.getMyProfile
-)
+router.get('/me', auth(UserRole.ADMIN, UserRole.TRAVELLER), UserController.getMyProfile)
 router.post("/create-traveler", fileUploader.upload.single("file"),
     (req: Request, res: Response, next: NextFunction) => {
         req.body = UserValidation.createTravallerValidationSchema.parse(JSON.parse(req.body.data))
@@ -25,9 +21,10 @@ router.post("/create-admin",auth(UserRole.ADMIN), fileUploader.upload.single("fi
     }
 )
 
-router.get("/", auth(UserRole.ADMIN), UserController.getAllFromDB)
-
-router.get( '/:id', UserController.changeProfileStatus);//3
+router.get("/", UserController.getAllFromDB)
+router.get("/travaller/:id", UserController.getTravallerById)
+router.get("/:email", UserController.getUserByEmail)
+router.get( '/:id', UserController.getMyProfile);//3
 router.patch('/:id',  UserController.changeProfileStatus);//4
 
 

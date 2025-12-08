@@ -8,7 +8,7 @@ router.post("/", TravelPlanController.createTravelPlan);//5
 router.get("/", TravelPlanController.getAllTravelPlans);//6
 router.get("/match", TravelPlanController.getAllTravelPlans);//7
 router.get("/:id", TravelPlanController.getSingleTravelPlan);
-router.put("/:id", TravelPlanController.updateTravelPlan);
+router.patch("/:id", TravelPlanController.updateTravelPlan);
 router.delete("/:id", TravelPlanController.deleteTravelPlan);
 
 export const TravelPlanRoutes = router;

@@ -1,4 +1,4 @@
-import { Request, Response } from "express";
+import { NextFunction, Request, Response } from "express";
 import catchAsync from "../../shared/catchAsync";
 import sendResponse from "../../shared/sendResponse";
 import { UserService } from "./user.services";
@@ -14,7 +14,7 @@ const getAllFromDB = catchAsync(async (req: Request, res: Response) => {
     sendResponse(res, {
         statusCode: 200,
         success: true,
-        message: "User retrive successfully",
+        message: "Travaller retrive successfully",
         meta:result.meta,
         data: result.data
     })
@@ -41,7 +41,6 @@ const createAdmin = catchAsync(async (req: Request, res: Response) => {
 })
 
 const getMyProfile = catchAsync(async (req: Request & { user?: IJWTPayload }, res: Response) => {
-
     const user = req.user;
 
     const result = await UserService.getMyProfile(user as IJWTPayload);
@@ -50,6 +49,26 @@ const getMyProfile = catchAsync(async (req: Request & { user?: IJWTPayload }, re
         statusCode: httpStatus.OK,
         success: true,
         message: "My profile data fetched!",
+        data: result
+    })
+});
+const getUserByEmail = catchAsync(async (req: Request, res: Response, next: NextFunction) => {
+        const EmailId = req.params.email as string
+        const result = await UserService.getUserByEmail(EmailId)
+    sendResponse(res, {
+        statusCode: httpStatus.OK,
+        success: true,
+        message: "User get Successfully",
+        data: result
+    })
+});
+const getTravallerById = catchAsync(async (req: Request, res: Response, next: NextFunction) => {
+        const id = req.params.id as string
+        const result = await UserService.getTravallerById(id)
+    sendResponse(res, {
+        statusCode: httpStatus.OK,
+        success: true,
+        message: "Single Travaller get Successfully",
         data: result
     })
 });
@@ -81,5 +100,6 @@ console.log(req.user);
     })
 });
 export const UserController = {
-    createTravaller, getAllFromDB, createAdmin, getMyProfile, changeProfileStatus,updateMyProfie
+    createTravaller,getTravallerById,
+     getAllFromDB, createAdmin,getUserByEmail, getMyProfile, changeProfileStatus,updateMyProfie
 }

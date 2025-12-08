@@ -13,6 +13,10 @@ router.get(
     "/me",
     AuthController.getMe
 )
+router.get(
+    "/alluser",
+    AuthController.getAllUser
+)
 
 router.post("/register", fileUploader.upload.single("file"),
     (req: Request, res: Response, next: NextFunction) => {

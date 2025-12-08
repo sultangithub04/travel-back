@@ -7,7 +7,7 @@ const router = express.Router();
 router.post("/", ReviewController.createReview);//8
 router.get("/", ReviewController.getAllReviews);
 router.get("/:id", ReviewController.getSingleReview);
-router.put("/:id", ReviewController.updateReview);
+router.patch("/:id", ReviewController.updateReview);
 router.delete("/:id", ReviewController.deleteReview);
 
 export const ReviewRoutes = router;

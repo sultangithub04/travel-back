@@ -3,6 +3,23 @@ import catchAsync from "../../shared/catchAsync";
 import sendResponse from "../../shared/sendResponse";
 import { AuthService } from "./auth.service";
 import httpStatus from "http-status";
+import pick from "../../helper/pick";
+
+
+
+const getAllUser = catchAsync(async (req: Request, res: Response) => {
+    const filters= pick(req.query, ["status", "role", "email", "searchTerm"])
+    const option= pick(req.query, ["page", "limit", "sortBy","sortOrder"])
+ 
+    const result = await AuthService.getAllUser(filters, option);
+    sendResponse(res, {
+        statusCode: 200,
+        success: true,
+        message: "All User retrive successfully",
+        meta:result.meta,
+        data: result.data
+    })
+})
 
 const login = catchAsync(async (req: Request, res: Response) => {
     const result = await AuthService.login(req.body);
@@ -109,5 +126,5 @@ export const AuthController = {
     changePassword,
     resetPassword,
     forgotPassword,
-    getMe
+    getMe, getAllUser
 }

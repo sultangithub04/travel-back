@@ -57,7 +57,7 @@ const createAdmin = async (req: Request) => {
 const getAllFromDB = async (params: any, option: any) => {
     const { page, limit, skip, sortBy, sortOrder } = paginationHelper.calculatePagination(option)
     const { searchTerm, ...filterData } = params;
-    const andCondition: Prisma.UserWhereInput[] = [];
+    const andCondition: Prisma.TravellerWhereInput[] = [];
     if (searchTerm) {
         andCondition.push({
             OR: ["email"].map(field => ({
@@ -77,18 +77,35 @@ const getAllFromDB = async (params: any, option: any) => {
             }))
         })
     }
-    const whereConditions: Prisma.UserWhereInput = andCondition.length > 0 ? {
+    const whereConditions: Prisma.TravellerWhereInput = andCondition.length > 0 ? {
         AND: andCondition
     } : {}
-    const result = await prisma.user.findMany({
+    const result = await prisma.traveller.findMany({
         skip,
         take: limit,
         where: whereConditions,
         orderBy: {
             [sortBy]: sortOrder
+        },
+        include:{
+            user:{
+                select:{
+                    travelPlans:true
+                }
+            }
         }
     });
-    const total = await prisma.user.count({
+
+const formattedData = result.map(item => {
+    const { user, ...rest } = item;
+
+    return {
+        ...rest,
+        travelPlans: user?.travelPlans ?? []
+    };
+});
+
+    const total = await prisma.traveller.count({
         where: whereConditions
     })
     return {
@@ -97,7 +114,7 @@ const getAllFromDB = async (params: any, option: any) => {
             limit,
             total
         },
-        data: result
+        data: formattedData
     }
 }
 const getMyProfile = async (user: IJWTPayload) => {
@@ -106,13 +123,11 @@ const getMyProfile = async (user: IJWTPayload) => {
             email: user.email,
             status: UserStatus.ACTIVE
         },
-        select: {
-            id: true,
-            email: true,
-            needPasswordChange: true,
-            role: true,
-            status: true
+        include: {
+            travelPlans: true,
+            reviewsReceived: true
         }
+
     })
 
     let profileData;
@@ -156,6 +171,30 @@ const changeProfileStatus = async (id: string, payload: { status: UserStatus }) 
 
     return updateUserStatus;
 };
+const getUserByEmail = async (email: string) => {
+    const result= await prisma.user.findUniqueOrThrow({
+        where: {
+            email: email
+        }, 
+        include:{
+            traveller: true,
+            travelPlans: true,
+            reviewsReceived: true
+        }
+    })
+    return result
+};
+const getTravallerById = async (id: string) => {
+    const result= await prisma.traveller.findUniqueOrThrow({
+        where: {
+            id: id
+        }, 
+  
+    })
+    return result
+};
+
+
 
 const updateMyProfie = async (user: IJWTPayload, req: Request) => {
     const userInfo = await prisma.user.findUniqueOrThrow({
@@ -193,5 +232,6 @@ const updateMyProfie = async (user: IJWTPayload, req: Request) => {
     return { ...profileInfo };
 }
 export const UserService = {
-    createTravaller, getAllFromDB, createAdmin,getMyProfile,updateMyProfie,changeProfileStatus
+    createTravaller,getTravallerById,
+     getAllFromDB, getUserByEmail, createAdmin, getMyProfile, updateMyProfie, changeProfileStatus
 }

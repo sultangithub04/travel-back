@@ -1,4 +1,4 @@
-import { UserStatus } from "@prisma/client"
+import { Prisma, UserStatus } from "@prisma/client"
 import { prisma } from "../../shared/prisma"
 import bcrypt from "bcryptjs";
 import { Secret } from 'jsonwebtoken'
@@ -9,6 +9,59 @@ import config from "../../../config";
 import emailSender from "./emailSender";
 import { emit } from "process";
 import ApiError from "../../../errors/ApiError";
+import { paginationHelper } from "../../helper/paginationHelper";
+
+const getAllUser = async (params: any, option: any) => {
+    const { page, limit, skip, sortBy, sortOrder } = paginationHelper.calculatePagination(option)
+    const { searchTerm, ...filterData } = params;
+    const andCondition: Prisma.UserWhereInput[] = [];
+    if (searchTerm) {
+        andCondition.push({
+            OR: ["email"].map(field => ({
+                [field]: {
+                    contains: searchTerm,
+                    mode: "insensitive"
+                }
+            }))
+        })
+    }
+    if (Object.keys(filterData).length > 0) {
+        andCondition.push({
+            AND: Object.keys(filterData).map(key => ({
+                [key]: {
+                    equals: (filterData as any)[key]
+                }
+            }))
+        })
+    }
+    const whereConditions: Prisma.UserWhereInput = andCondition.length > 0 ? {
+        AND: andCondition
+    } : {}
+    const result = await prisma.user.findMany({
+        skip,
+        take: limit,
+        where: whereConditions,
+        orderBy: {
+            [sortBy]: sortOrder
+        },
+   
+    });
+
+
+
+    const total = await prisma.user.count({
+        where: whereConditions
+    })
+    return {
+        meta: {
+            page,
+            limit,
+            total
+        },
+        data: result
+    }
+}
+
 
 const login = async (payload: { email: string, password: string }) => {
     const user = await prisma.user.findUniqueOrThrow({
@@ -188,5 +241,5 @@ export const AuthService = {
     forgotPassword,
     refreshToken,
     resetPassword,
-    getMe
+    getMe,getAllUser
 }
