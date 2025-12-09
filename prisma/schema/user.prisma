@@ -59,14 +59,15 @@ model Traveller {
 
 // TRAVEL PLAN
 model TravelPlan {
-  id          Int        @id @default(autoincrement())
-  user        User       @relation(fields: [userId], references: [id])
+  id          Int           @id @default(autoincrement())
+  user        User          @relation(fields: [userId], references: [id])
   userId      String
   title       String
   destination String
   startDate   DateTime
   endDate     DateTime
   budgetRange String
+  status      PaymentStatus @default(UNPAID)
   travelType  TravelType
   description String?
 

@@ -9,12 +9,17 @@ import { PaymentController } from './app/modules/payment/payment.controller';
 
 
 
+
 const app: Application = express();
 
-
+app.post(
+    "/webhook",
+    express.raw({ type: "application/json" }),
+    PaymentController.handleStripeWebhookEvent
+);
 
 app.use(cors({
-       origin: [
+    origin: [
         'http://localhost:3000',
         'https://fontnew.vercel.app'
     ],

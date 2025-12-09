@@ -6,6 +6,7 @@ import { authRoutes } from '../modules/auth/auth.routes';
 import { MetaRoutes } from '../modules/meta/meta.routes';
 import { TravelPlanRoutes } from '../modules/plan/travelPlan.route';
 import { ReviewRoutes } from '../modules/review/review.route';
+import { PaymentRoutes } from '../modules/payment/payment.route';
 
 
 
@@ -30,7 +31,7 @@ const moduleRoutes = [
     },
     {
         path: '/payments',
-        route: ReviewRoutes
+        route: PaymentRoutes
     },
     {
         path: '/meta',

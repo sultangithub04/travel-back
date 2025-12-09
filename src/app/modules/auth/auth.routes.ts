@@ -2,9 +2,9 @@ import express, { NextFunction, Request, Response } from 'express'
 import { AuthController } from './auth.controller';
 import auth from '../../middlewares/auth';
 import { UserRole } from '@prisma/client';
-import { fileUploader } from '../../helper/fileuploder';
 import { UserValidation } from '../user/user.validation';
 import { UserController } from '../user/user.controller';
+import { multerUpload } from '../../../config/multer.config';
 
 
 const router = express.Router();
@@ -18,7 +18,7 @@ router.get(
     AuthController.getAllUser
 )
 
-router.post("/register", fileUploader.upload.single("file"),
+router.post("/register", multerUpload.single("file"),
     (req: Request, res: Response, next: NextFunction) => {
         req.body = UserValidation.createTravallerValidationSchema.parse(JSON.parse(req.body.data))
         return UserController.createTravaller(req, res, next)

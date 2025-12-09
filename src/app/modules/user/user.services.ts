@@ -1,10 +1,11 @@
 import { Request, Response } from "express";
 import { prisma } from "../../shared/prisma";
 import bcrypt from "bcrypt";
-import { fileUploader } from "../../helper/fileuploder";
+
 import { paginationHelper } from "../../helper/paginationHelper";
 import { Prisma, UserRole, UserStatus } from "@prisma/client";
 import { IJWTPayload } from "../../types/common";
+import { multerUpload } from "../../../config/multer.config";
 
 
 
@@ -12,8 +13,8 @@ import { IJWTPayload } from "../../types/common";
 
 const createTravaller = async (req: Request) => {
     if (req.file) {
-        const uploadResult = await fileUploader.uploadToCludinary(req.file)
-        req.body.travaller.profilePhoto = uploadResult?.secure_url
+        // const uploadResult = await fileUploader.uploadToCludinary(req.file)
+        req.body.travaller.profilePhoto = req.file?.path
 
     }
     const hashPassword = await bcrypt.hash(req.body.password, 10)
@@ -33,8 +34,8 @@ const createTravaller = async (req: Request) => {
 }
 const createAdmin = async (req: Request) => {
     if (req.file) {
-        const uploadResult = await fileUploader.uploadToCludinary(req.file)
-        req.body.admin.profilePhoto = uploadResult?.secure_url
+        
+        req.body.admin.profilePhoto = req.file?.path
 
     }
     const hashPassword = await bcrypt.hash(req.body.password, 10)
@@ -206,8 +207,8 @@ const updateMyProfie = async (user: IJWTPayload, req: Request) => {
 
     const file = req.file;
     if (file) {
-        const uploadToCloudinary = await fileUploader.uploadToCludinary(file)
-        req.body.profilePhoto = uploadToCloudinary?.secure_url;
+    
+        req.body.profilePhoto = file?.path;
     }
 
     let profileInfo;
