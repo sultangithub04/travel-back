@@ -6,6 +6,7 @@ import sendResponse from "../../shared/sendResponse";
 
 const createTravelPlan = catchAsync(async (req: Request, res: Response) => {
   const result = await TravelPlanService.createTravelPlan(req.body);
+  
 
   sendResponse(res, {
     statusCode: 201,

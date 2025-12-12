@@ -19,7 +19,12 @@ const createTravallerValidationSchema = z.object({
     travaller: z.object({
         name: z.string().nonempty("Name is required"),
         email: z.string().nonempty("Email is required"),
-        address: z.string().optional()
+        address: z.string().optional(),
+        bio: z.string().optional(),
+        travelInterests: z.string().optional(),
+        visitedCountries: z.string().optional(),
+        currentLocation: z.string().optional(),
+        
     })
 });
 

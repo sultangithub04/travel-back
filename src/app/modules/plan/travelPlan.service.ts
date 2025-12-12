@@ -4,12 +4,13 @@ import { prisma } from "../../shared/prisma";
 const createTravelPlan = async (payload: any) => {
   const result = await prisma.travelPlan.create({
     data: {
-      userId: payload.userId,
-      title:payload.title,
+      travellerId: payload.travellerId,
+      title: payload.title,
       destination: payload.destination,
-      startDate: payload.startDate,
-      endDate: payload.endDate,
-      budgetRange: payload.budgetRange,
+      startDate: new Date(payload.startDate),
+      endDate: new Date(payload.endDate),
+      budgetMin: Number(payload.budgetMin) ?? null,
+      budgetMax: Number(payload.budgetMax) ?? null,
       travelType: payload.travelType,
       description: payload.description || null,
     },
@@ -21,14 +22,10 @@ const createTravelPlan = async (payload: any) => {
 const getAllTravelPlans = async () => {
   const result = await prisma.travelPlan.findMany({
     include: {
-      user: {
-        include: {
-          traveller: true
-        }
-      },
+      traveller: true,
       reviews: true,
       matchRequests: true,
- 
+
     },
   });
 
@@ -39,15 +36,11 @@ const getSingleTravelPlan = async (id: string) => {
   const result = await prisma.travelPlan.findUnique({
     where: { id: Number(id) },
     include: {
-      user: {
-        include:{
-          traveller:true
-        }
-      },
+      traveller: true,
       reviews: true,
       matchRequests: true,
-      
-     
+
+
     },
   });
 
@@ -57,7 +50,17 @@ const getSingleTravelPlan = async (id: string) => {
 const updateTravelPlan = async (id: string, payload: any) => {
   const result = await prisma.travelPlan.update({
     where: { id: Number(id) },
-    data: payload,
+    data: {
+
+      title: payload.title,
+      destination: payload.destination,
+      startDate: new Date(payload.startDate),
+      endDate: new Date(payload.endDate),
+      budgetMin: payload.budgetMin ?? null,
+      budgetMax: payload.budgetMax ?? null,
+      travelType: payload.travelType,
+      description: payload.description || null,
+    },
   });
 
   return result;

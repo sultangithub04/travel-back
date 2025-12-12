@@ -89,22 +89,15 @@ const getAllFromDB = async (params: any, option: any) => {
             [sortBy]: sortOrder
         },
         include:{
-            user:{
-                select:{
+           
+           
                     travelPlans:true
-                }
-            }
+          
+            
         }
     });
 
-const formattedData = result.map(item => {
-    const { user, ...rest } = item;
 
-    return {
-        ...rest,
-        travelPlans: user?.travelPlans ?? []
-    };
-});
 
     const total = await prisma.traveller.count({
         where: whereConditions
@@ -115,7 +108,7 @@ const formattedData = result.map(item => {
             limit,
             total
         },
-        data: formattedData
+        data: result
     }
 }
 const getMyProfile = async (user: IJWTPayload) => {
@@ -124,10 +117,7 @@ const getMyProfile = async (user: IJWTPayload) => {
             email: user.email,
             status: UserStatus.ACTIVE
         },
-        include: {
-            travelPlans: true,
-            reviewsReceived: true
-        }
+
 
     })
 
@@ -178,9 +168,19 @@ const getUserByEmail = async (email: string) => {
             email: email
         }, 
         include:{
-            traveller: true,
-            travelPlans: true,
-            reviewsReceived: true
+            traveller: {
+                include: {
+                    travelPlans: true,
+                    reviewsGiven:true,
+                    reviewsReceived: true
+                    
+                },
+            
+            },
+            
+            
+ 
+
         }
     })
     return result

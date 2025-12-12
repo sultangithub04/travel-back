@@ -6,14 +6,11 @@ import { PaymentStatus } from "@prisma/client";
 
 
 export const createPayment = async (payload: any) => {
+  console.log(payload);
+
   // 1️⃣ Create payment record in database
   const payment = await prisma.payment.create({
-    data: {
-      userId: payload.userId,
-      subscriptionType: payload.subscriptionType,
-      amount: payload.amount,
-      status: payload.status, // e.g., UNPAID
-    },
+    data: payload
   });
 
   // 2️⃣ Create Stripe checkout session
@@ -37,8 +34,8 @@ export const createPayment = async (payload: any) => {
       paymentId: payment.id, // link to DB payment
       userId: payload.userId
     },
-    success_url: `https://travelfont.vercel.app/travel-plans`,
-    cancel_url: `https://travelfont.vercel.app/cancel`,
+    success_url: `https://fontnew.vercel.app/success`,
+    cancel_url: `https://fontnew.vercel.app/cancel`,
   });
   console.log(session);
   // 3️⃣ Return Stripe session URL to frontend
@@ -47,14 +44,14 @@ export const createPayment = async (payload: any) => {
 
 const getAllPayments = async () => {
   return prisma.payment.findMany({
-    include: { user: true },
+    include: { traveller: true },
   });
 };
 
 const getSinglePayment = async (id: string) => {
   return prisma.payment.findUnique({
     where: { id: Number(id) },
-    include: { user: true },
+    include: { traveller: true },
   });
 };
 
